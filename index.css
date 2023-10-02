@@ -1,0 +1,193 @@
+* {
+  box-sizing: border-box;
+}
+
+body, button, input {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttons button,
+input.date {
+  white-space: nowrap;
+  padding: 10px 30px;
+}
+
+.buttons button,
+.panel .header,
+input.date {
+  min-width: 215px;
+}
+
+.buttons button,
+input,
+.panel .header {
+  margin: 10px;
+  border-radius: 50px;
+  text-align: center;
+}
+
+input.date {
+  padding: 10px;
+}
+
+input.amount {
+  width: 170px;
+  padding: 10px;
+}
+
+.panel .header {
+  text-align: center;
+  margin-top: 0;
+}
+
+.panel#variable input.amount {
+  width: 200px;
+}
+
+.buttons button .text {
+  width: calc(100% - 31px);
+  display: inline-block;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+button.inactive {
+  /* !important needed to easily override the button's style color */
+  background-color: #eee !important;
+}
+
+button.inactive .text {
+  color: #666;
+}
+
+button.inactive .icon {
+  opacity: 30%;
+}
+
+.data,
+.goal,
+.todayButton {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 22px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data {
+  border-radius: 100px;
+  border: 6px double black;
+}
+
+.goal {
+  margin-left: 10px;
+  color: #666;
+}
+
+.goal.complete {
+  font-size: 32px;
+}
+
+.todayButton {
+  border-radius: 100px;
+  border: 2px inset black;
+}
+
+.todayButton:active {
+  border-style: outset;
+}
+
+.complete {
+  color: #a0ce1c;
+}
+
+.panel.hidden,
+.panelCloseOverlay.hidden,
+.daylogs.hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  top: 0;
+}
+
+.panel {
+  opacity: 100%;
+  transition: opacity 0.1s ease-in-out;
+  background: #eee;
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, 0);
+  padding: 20px;
+  border-radius: 30px;
+  z-index: 10;
+  max-height: 98%;
+  overflow: auto;
+}
+
+.panelCloseOverlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+table.logs {
+  border-collapse: collapse;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+table.logs tr:not(:last-child) {
+  border-bottom: 1px solid #aaa;
+}
+
+table.logs td {
+  padding: 10px 0;
+}
+
+table.logs td:first-child {
+  text-align: right;
+  padding-right: 10px;
+}
+
+table.logs td:last-child {
+  font-weight: 500;
+}
+
+.daylogs {
+  display: flex;
+  width: 90%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.daylog {
+  width: 40%;
+  border: 3px solid #af9b9b;
+  border-radius: 40px;
+  text-align: center;
+  margin: 5px;
+  padding: 5px;
+}
