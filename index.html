@@ -17,7 +17,7 @@
       <tr>
         <td><input type="date" class="date"/></td><td><div class="todayButton" ng-click="resetDateInputToToday()">📅</div></td>
       </tr>
-
+      <tr><td class="note hidden" colspan="3">(Still logging for {{yesterday}})</td></tr>
       <tr ng-repeat="config in buttons.visible">
         <td><button ng-click="handleButtonClick(config.name)" 
                 ng-style="{'background-color': config.color}" 
@@ -26,13 +26,13 @@
           <span class="icon">{{config.displayIcon}}</span><span class="text">{{config.viewName}}</span>
         </button></td>
         <td><div class="data" id="{{config.name}}" ng-style="{'border-color': config.borderColor}" ng-click="openLogPanel(config.name)">
-          {{config.remaining}}
+          {{config.remainingStr}}
         </div></td>
         <td><div ng-if="config.goal" id="{{config.name}}" class="goal
           {{(config.type === 1 && config.remaining < config.goal) || 
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
           {{(config.type === 1 && config.remaining < config.goal) || 
-            (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goal + ')' : '☺'}}
+            (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goalStr + ')' : '☺'}}
         </div></td>
       </tr>
     </table>

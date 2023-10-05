@@ -10,19 +10,22 @@
   if (empty($name)) die('{"Error":"Name cannot be empty"}');
   $pd = $_GET["period"];
   if (empty($pd)) die('{"Error":"Period cannot be empty"}');
+  $date = $_GET["date"];
+  if (empty($date)) die('{"Error":"Date cannot be empty"}');
 
   // Default to D 
-  $lastDate = strtotime('midnight');
+  $lastDate = strtotime($date);
   if ($pd == "W") {
-    $lastDate = strtotime('last sunday');
+    $lastDate = strtotime('last sunday', strtotime($date));
   }
   if ($pd == "M") {
     $lastDate = strtotime('first day of this month');
   }
 
-  $datestr = date("Y-m-d", $lastDate);
+  $startStr = date("Y-m-d", $lastDate);
+  $endstr = date("Y-m-d", strtotime($date));
 
-  $sql = "SELECT SUM(value) as sum from logs WHERE `name` = '$name' AND `date` >= '$datestr'"; 
+  $sql = "SELECT SUM(value) as sum from logs WHERE `name` = '$name' AND `date` >= '$startStr' AND `date` <= '$endstr'"; 
   
   $entryresult = mysqli_query($db, $sql) or die(mysqli_error($db));
   $sum = mysqli_fetch_assoc($entryresult)["sum"];

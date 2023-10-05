@@ -20,13 +20,9 @@
     $value = 0;
   }
   $date = mysqli_real_escape_string($db, $params->date);
-  if (empty($date)) { 
-    $date = time();
-  } else {
-    $date = strtotime($date);
-  }
+  if (empty($date)) die('{"Error":"Date cannot be empty"}');
 
-  $datestr = date ("Y-m-d", $date);
+  $datestr = date ("Y-m-d", strtotime($date));
 
   $sql = "INSERT INTO logs (name, value, date) VALUES ('$name', $value, '$datestr');";
  

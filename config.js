@@ -21,7 +21,10 @@ function getRemainingAndPctForToggleDiff(diff, isActive, cycleLength, instanceLe
 // returns [remaining, pct]
 function getRemainingAndPctForToggleDate(lastActiveStr, config) {
   const lastActive = new Date(lastActiveStr);
-  const now = new Date();
-  const diff = Math.floor((now - lastActive) / (DAY_MILLIS));
+  const diff = Math.floor((NOW - lastActive) / (DAY_MILLIS));
   return getRemainingAndPctForToggleDiff(diff, !config.isInactive, config.expected_cycle_length, config.expected_instance_length);
+}
+
+function usesSumLogs(config) {
+  return config.type === TIMELY && config.amount_varies && config.refresh_cycle === 'D';
 }

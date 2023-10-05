@@ -7,10 +7,12 @@
 
   $json = [];
 
-  $today = date("Y-m-d");
   $name = $_GET["name"];
-
-  $sql = "SELECT * from logs WHERE `date` = '$today'"; 
+  if (empty($name)) die('{"Error":"Name cannot be empty"}');
+  $date = $_GET["date"];
+  if (empty($date)) die('{"Error":"Date cannot be empty"}');
+  $dateStr = date("Y-m-d", strtotime($date));
+  $sql = "SELECT * from logs WHERE `date` = '$dateStr'"; 
 
   if ($name) {
     $sql = $sql . " AND name = '$name'"; 

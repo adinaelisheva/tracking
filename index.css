@@ -8,6 +8,12 @@ body, button, input {
   font-size: 18px;
 }
 
+.note {
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+}
+
 .buttons {
   display: flex;
   flex-direction: column;
@@ -120,6 +126,10 @@ button.inactive .icon {
   opacity: 0;
   pointer-events: none;
   top: 0;
+}
+
+td.hidden {
+  display: none;
 }
 
 .panel {

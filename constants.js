@@ -14,7 +14,11 @@ const ICONMAP = {
   dance: '💃',
   blood: '🩸',
   sleep: '😴',
+  mask: '👺',
+  footprints: '👣',
   default: '✅',
+  on: '🔴',
+  off: '⚪',
 }
 
 const TIMELY = 1;
@@ -28,3 +32,7 @@ const DAYS_OF_WEEK_ABBREV = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 // Used to ensure a date w/no time is converted to midnight on the correct date
 const TIME_SUFFIX = 'T00:00:00.000';
+
+const NOW = new Date();
+const IS_EARLY_HOURS = NOW.getHours() <= 4;
+let BASE_DATE;

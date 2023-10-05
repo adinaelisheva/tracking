@@ -3,6 +3,11 @@ angular.module('tracking',[]).service('httpSrvc', ['$http', function ($http) {
     configs: [],
   };
 
+  this.getYesterday = async function() {
+    const date = await $http.get('/tracking/getyesterday.php');
+    return date.data.trim();
+  }
+
   this.fetchConfigs = async function() {
     const configs = await $http.get('/tracking/configs.php');
     data.configs = configs.data;
@@ -10,21 +15,23 @@ angular.module('tracking',[]).service('httpSrvc', ['$http', function ($http) {
 
   this.fetchMonthLogs = async function(name) {
     let qStr = '/tracking/monthlogs.php';
-    if (name) { qStr = qStr + `?name=${name}`; }
+    const date = getDateInputDate();
+    if (name) { qStr = qStr + `?name=${name}&date=${date}`; }
     const logs = await $http.get(qStr);
     return logs.data;
   }
 
   this.fetchDayLogs = async function(name) {
     let qStr = '/tracking/daylogs.php';
-    if (name) { qStr = qStr + `?name=${name}`; }
+    const date = getDateInputDate();
+    if (name) { qStr = qStr + `?name=${name}&date=${date}`; }
     const logs = await $http.get(qStr);
     return logs.data;
   }
 
-  // Date is optional
-  this.log = async function(name, value, date) {
+  this.log = async function(name, value) {
     if(!name || value == null) { return; }
+    const date = getDateInputDate();
     // Commented out temporarily for testing local changes only
     const results = await $http.post(`/tracking/add.php`, {
       name,
@@ -52,7 +59,8 @@ angular.module('tracking',[]).service('httpSrvc', ['$http', function ($http) {
 
   this.getSumOverPd = async function(name, pd) {
     if (!name || !pd) { return; }
-    const result = await $http.get(`/tracking/sumoverpd.php?name=${name}&period=${pd}`);
+    const date = getDateInputDate();
+    const result = await $http.get(`/tracking/sumoverpd.php?name=${name}&period=${pd}&date=${date}`);
     let ret = parseInt(result.data);
     if (isNaN(ret)) {
       ret = 0;

@@ -29,17 +29,25 @@ function getPctColor(pct) {
   return `rgb(${color[0]},${color[1]},${color[2]})`;
 }
 
-function resetDateInputToToday() {
-  const d = new Date();
-  let day = `${d.getDate()}`;
+function getTodayDateInputStr() {
+  let day = `${NOW.getDate()}`;
   if (day.length < 2) { day = `0${day}`; }
-  let month = `${d.getMonth() + 1}`;
+  let month = `${NOW.getMonth() + 1}`;
   if (month.length < 2) { month = `0${month}`; }
-  const dStr = `${d.getFullYear()}-${month}-${day}`
-  const inputs = document.querySelectorAll('input.date');
-  for (const i of inputs) {
-    i.value = dStr;
-  }
+  return `${NOW.getFullYear()}-${month}-${day}`
+}
+
+function resetDateInputToToday() {
+  document.querySelector('input.date').value = BASE_DATE;
+}
+
+function isDateInputReset() {
+  const dStr = getTodayDateInputStr();
+  return document.querySelector('input.date').value === dStr;
+}
+
+function getDateInputDate() {
+  return document.querySelector('input.date').value;
 }
 
 function updateItemPctColor(el, pct, property = 'border-color') {
@@ -62,7 +70,19 @@ function completeGoal(name) {
   goalEl.classList.add('complete');
 }
 
-function updateDomForTimelyAmount(name, amount) {
+function updateDataElAndGoal(dataEl, amount, pct, name, isComplete) {
+  if (getDateInputDate() !== BASE_DATE) {
+    // Don't update for a different day
+    return;
+  }
+  dataEl.innerHTML = amount;
+  updateItemPctColor(dataEl, pct);
+  if (isComplete) {
+    completeGoal(name);
+  }
+}
+
+function updateDomForTimelyAmount(name, amount, usesSumLogs) {
   const dataEl = document.querySelector(`.data#${name}`);
   let curTotal = parseInt(dataEl.innerText);
   if (isNaN(curTotal)) {
@@ -70,24 +90,32 @@ function updateDomForTimelyAmount(name, amount) {
     return;
   }
   curTotal += amount;
-  dataEl.innerHTML = curTotal;
   const goal = getGoal(name);
   if (isNaN(goal)) {
     // Could just be completed
     return;
   }
   pct = getPctForTimely(curTotal, goal);
-  updateItemPctColor(dataEl, pct);
-  if (curTotal >= goal) {
-    completeGoal(name);
+  const isComplete = curTotal >= goal;
+  updateDataElAndGoal(dataEl, curTotal, pct, name, isComplete);
+  if (usesSumLogs) {
+    updateLastLogRow(name, curTotal, isComplete);
+  } else {
+    addLogRowToTableNamed(name, amount, isComplete, true);
+  }
+
+  const daylogs = document.querySelector(`.daylogs#${name}`);
+  if (daylogs && getDateInputDate() === BASE_DATE) {
+    // Don't update for a different day
+    addDaylog(daylogs, amount);
   }
 }
 
 function updateDomForInstance(name) {
   const dataEl = document.querySelector(`.data#${name}`);
-  dataEl.innerHTML = 0;
-  updateItemPctColor(dataEl, 1); // We're at min time since = max accomplishment
+  updateDataElAndGoal(dataEl, 0, 1, name, true); // We're at min time since = max accomplishment
   completeGoal(name);
+  addLogRowToTableNamed(name, null, null, true);
 }
 
 function getActiveStateFromDom(name) {
@@ -105,11 +133,9 @@ function updateDomForToggle(config, isActive) {
   let remaining, pct;
   [remaining, pct] = getRemainingAndPctForToggleDiff(0, isActive, config.expected_cycle_length, config.expected_instance_length);
   const dataEl = document.querySelector(`.data#${config.name}`);
-  dataEl.innerHTML = remaining;
-  updateItemPctColor(dataEl, pct);
+  updateDataElAndGoal(dataEl, remaining, pct);
+  addLogRowToTableNamed(config.name, isActive ? ICONMAP.on : ICONMAP.off, null, true);
 }
-
-
 
 function openPanelNearButton(name, panel, button) {
   let top = '50%';
@@ -154,12 +180,16 @@ function createDayLogsDiv(name, logs) {
   dayLogsDiv.classList.add('daylogs');
   dayLogsDiv.setAttribute('id', name);
   for (const log of logs) {
-    const logDiv = document.createElement('div');
-    logDiv.classList.add('daylog');
-    logDiv.innerHTML = log.value;
-    dayLogsDiv.appendChild(logDiv);
+    addDaylog(dayLogsDiv, log.value);
   }
   document.querySelector('#variable').appendChild(dayLogsDiv);
+}
+
+function addDaylog(daylogsParent, value) {
+  const logDiv = document.createElement('div');
+    logDiv.classList.add('daylog');
+    logDiv.innerHTML = value;
+    daylogsParent.appendChild(logDiv);
 }
 
 function hideAnyDaylogs() {
@@ -186,21 +216,50 @@ function addDailySumsToTable(table, logs, goal) {
   addLogRowToTable(table, curDate, logSums[curDate], logSums[curDate] >= goal);
 }
 
-function addAllLogsToTable(table, logs, showAmount) {
+function addAllLogsToTable(table, logs, showAmount, useIcon) {
   for (const log of logs) {
-    addLogRowToTable(table, log.date, showAmount ? log.value : null);
+    let value = showAmount ? log.value : null;
+    if (useIcon) {
+      value = log.value ? ICONMAP.on : ICONMAP.off;
+    }
+    addLogRowToTable(table, log.date, value);
   }
 }
 
-function addLogRowToTable(table, date, value, isComplete) {
-  if (!date) {
+function addLogRowToTableNamed(name, value, isComplete, prepend) {
+  const date = getDateInputDate();
+  const table = document.querySelector(`.panel#${name}log table`); 
+  addLogRowToTable(table, date, value, isComplete, prepend);
+}
+
+function updateLastLogRow(name, value, isComplete) {
+  const date = getDateInputDate();
+  const table = document.querySelector(`.panel#${name}log table`);
+  const lastDate = table.querySelector('tr:first-child td:first-child').innerText.trim();
+  if (formatDateForLogTable(date) !== lastDate) {
+    // New row!
+    addLogRowToTable(table, date, value, isComplete);
+  } else {
+    const valCell = table.querySelector('tr:first-child td:last-child');
+    valCell.innerHTML = value;
+    if (isComplete) {
+      valCell.classList.add('complete');
+    }
+  }
+}
+
+function formatDateForLogTable (date) {
+  // Format eg: `Mon 9/30`
+  const d = new Date(date + TIME_SUFFIX);
+  return `${DAYS_OF_WEEK_ABBREV[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+function addLogRowToTable(table, date, value, isComplete, prepend) {
+  if (!table || !date) {
     return;
   }
 
-  // Format eg: `Mon 9/30`
-  const d = new Date(date + TIME_SUFFIX);
-  const dateStr = `${DAYS_OF_WEEK_ABBREV[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
-
+  const dateStr = formatDateForLogTable(date);
   const row = document.createElement('tr');
   const cell1 = document.createElement('td');
   cell1.innerHTML = dateStr;
@@ -213,5 +272,9 @@ function addLogRowToTable(table, date, value, isComplete) {
     }
     row.appendChild(cell2);
   }
-  table.appendChild(row);
+  if (prepend) {
+    table.insertBefore(row, table.firstChild);
+  } else {  
+    table.appendChild(row);
+  }
 }

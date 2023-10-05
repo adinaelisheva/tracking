@@ -7,10 +7,14 @@
 
   $json = [];
 
-  $pastdate = date("Y-m-d",strtotime("-30 days"));
   $name = $_GET["name"];
+  $date = $_GET["date"];
+  if (empty($date)) die('{"Error":"Date cannot be empty"}');
 
-  $sql = "SELECT * from logs WHERE `date` > '$pastdate'"; 
+  $pastdate = date("Y-m-d",strtotime("-30 days"));
+  $date = date("Y-m-d",strtotime($date));
+
+  $sql = "SELECT * from logs WHERE `date` > '$pastdate' AND `date` <= '$date'"; 
 
   if ($name) {
     $sql = $sql . " AND name = '$name'"; 

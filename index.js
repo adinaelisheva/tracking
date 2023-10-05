@@ -3,7 +3,12 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   const configsWithChildren = {};
 
   async function initialNonRepeatedSetup() {
+    BASE_DATE = IS_EARLY_HOURS ? await httpSrvc.getYesterday() : getTodayDateInputStr();
     resetDateInputToToday();
+    if (IS_EARLY_HOURS) {
+      document.querySelector('.note').classList.remove('hidden');
+    }
+
     await httpSrvc.fetchConfigs();
     $scope.buttons = {
       visible: [],
@@ -13,6 +18,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     const hiddenButtonsByName = {};
     for (const config of httpSrvc.data.configs) {
       config.viewName = config.name;
+      config.goalStr = shortenNumberForDisplay(config.goal);
       config.name = config.name.replace(' ', '_').replace('(','').replace(')','');
       configsByName[config.name] = config; // Save for easier lookup later
       await updateConfigForDisplay(config);
@@ -56,8 +62,16 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     }
   }
 
+  function shortenNumberForDisplay(n) {
+    if (`${n}`.length < 3) {
+      return `${n}`;
+    }
+    return `${Math.floor(n/1000)}k`;
+  }
+
   async function updateConfigTimelyData(config) {
     config.remaining = await httpSrvc.getSumOverPd(config.name, config.refresh_cycle);
+    config.remainingStr = shortenNumberForDisplay(config.remaining);
     const pct = getPctForTimely(config.remaining, config.goal);
     config.borderColor = getPctColor(pct);
   }
@@ -65,8 +79,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   async function updateConfigInstanceData(config) {
     const lastDoneStr = await httpSrvc.getLastVal(config.name, 1);
     const lastDone = new Date(lastDoneStr);
-    const now = new Date();
-    config.remaining = Math.floor((now - lastDone) / (DAY_MILLIS));
+    config.remaining = Math.floor((NOW - lastDone) / (DAY_MILLIS));
+    config.remainingStr = shortenNumberForDisplay(config.remaining);
     if (config.remaining < config.goal) {
       // We're within goal! 100% green
       config.borderColor = getPctColor(1);
@@ -90,12 +104,12 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     for (const config of httpSrvc.data.configs) {
       const table = document.querySelector(`.panel#${config.name}log table`);
       const logs = await httpSrvc.fetchMonthLogs(config.name);
-      if (config.type === TIMELY && config.amount_varies && config.refresh_cycle === 'D') {
+      if (usesSumLogs(config)) {
         addDailySumsToTable(table, logs, config.goal);
         const daylogs = await httpSrvc.fetchDayLogs(config.name);
         createDayLogsDiv(config.name, daylogs);
       } else {
-        addAllLogsToTable(table, logs, config.amount_varies);
+        addAllLogsToTable(table, logs, config.amount_varies, config.type === TOGGLE);
       }
     }
   }
@@ -167,31 +181,27 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
       // Must be a positive integer
       return; 
     }
-    log(name, amount);
-    updateDomForTimelyAmount(name, amount);
+    httpSrvc.log(name, amount);
+    const config = configsByName[name];
+    updateDomForTimelyAmount(name, amount, usesSumLogs(config));
   }
 
   function logSingleTimelyOccurence(config) {
-    log(config.name, 1);
-    updateDomForTimelyAmount(config.name, 1);
+    httpSrvc.log(config.name, 1);
+    updateDomForTimelyAmount(config.name, 1, usesSumLogs(config));
   }
 
   function logInstance(config) {
-    log(config.name, 1);
+    httpSrvc.log(config.name, 1);
     updateDomForInstance(config.name);
   }
 
   function logToggle(config) {
     const oldActiveState = getActiveStateFromDom(config.name);
     const newActiveState = oldActiveState ? 0 : 1;
-    log(config.name, newActiveState);
+    httpSrvc.log(config.name, newActiveState);
     config.isInactive = oldActiveState; // old state = new inactive value
     updateDomForToggle(config, newActiveState);
-  }
-
-  function log(name, amount) {
-    const date = document.querySelector('input.date').value;
-    httpSrvc.log(name, amount, date);
   }
 
   function openVariablePanel(name) {
@@ -219,6 +229,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   }
 
   $scope.resetDateInputToToday = resetDateInputToToday;
+  $scope.yesterday = DAYS_OF_WEEK_ABBREV[(NOW.getDay() + 6) % 7];
 
   initialNonRepeatedSetup();
 }]);
