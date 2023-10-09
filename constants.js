@@ -16,6 +16,7 @@ const ICONMAP = {
   sleep: '😴',
   mask: '👺',
   footprints: '👣',
+  boot: '🥾',
   default: '✅',
   on: '🔴',
   off: '⚪',
