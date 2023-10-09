@@ -190,9 +190,6 @@ function closeCurrentPanel() {
 }
 
 function createDayLogsDiv(name, logs) {
-  if (logs.length <= 1) {
-    return;
-  }
   const dayLogsDiv = document.createElement('div');
   dayLogsDiv.classList.add('hidden');
   dayLogsDiv.classList.add('daylogs');
