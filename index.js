@@ -62,13 +62,6 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     }
   }
 
-  function shortenNumberForDisplay(n) {
-    if (`${n}`.length < 3) {
-      return `${n}`;
-    }
-    return `${Math.floor(n/1000)}k`;
-  }
-
   async function updateConfigTimelyData(config) {
     config.remaining = await httpSrvc.getSumOverPd(config.name, config.refresh_cycle);
     config.remainingStr = shortenNumberForDisplay(config.remaining);
@@ -97,6 +90,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     const lastActiveStr = await httpSrvc.getLastVal(config.name, 1);
     let pct;
     [config.remaining, pct] = getRemainingAndPctForToggleDate(lastActiveStr, config);
+    config.remainingStr = shortenNumberForDisplay(config.remaining);
     config.borderColor = getPctColor(pct);
   }
 

@@ -21,6 +21,13 @@ body, button, input {
   align-items: center;
 }
 
+button,
+.todayButton,
+.data,
+.goal {
+  user-select: none;
+}
+
 .buttons button,
 input.date {
   white-space: nowrap;

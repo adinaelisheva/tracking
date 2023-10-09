@@ -29,6 +29,13 @@ function getPctColor(pct) {
   return `rgb(${color[0]},${color[1]},${color[2]})`;
 }
 
+function shortenNumberForDisplay(n) {
+  if (`${n}`.length < 3) {
+    return `${n}`;
+  }
+  return `${Math.floor(n/1000)}k`;
+}
+
 function getTodayDateInputStr() {
   let day = `${NOW.getDate()}`;
   if (day.length < 2) { day = `0${day}`; }
@@ -60,8 +67,19 @@ function getGoal(name) {
   let goalText = goalEl.innerText;
   // Chop off the parens from an expected string of `(N)`
   goalText = goalText.slice(1, goalText.length-1);
+  if (goalText.endsWith('k')) {
+    goalText = goalText.slice(0, goalText.length-1) + '000';
+  }
   const goal = parseInt(goalText);
   return isNaN(goal) ? null : goal;
+}
+
+function getData(dataEl) {
+  let dataText = dataEl.innerText;
+  if (dataText.endsWith('k')) {
+    dataText = dataText.slice(0, dataText.length-1) + '000';
+  }
+  return parseInt(dataText);
 }
 
 function completeGoal(name) {
@@ -75,7 +93,7 @@ function updateDataElAndGoal(dataEl, amount, pct, name, isComplete) {
     // Don't update for a different day
     return;
   }
-  dataEl.innerHTML = amount;
+  dataEl.innerHTML = shortenNumberForDisplay(amount);
   updateItemPctColor(dataEl, pct);
   if (isComplete) {
     completeGoal(name);
@@ -84,12 +102,12 @@ function updateDataElAndGoal(dataEl, amount, pct, name, isComplete) {
 
 function updateDomForTimelyAmount(name, amount, usesSumLogs) {
   const dataEl = document.querySelector(`.data#${name}`);
-  let curTotal = parseInt(dataEl.innerText);
+  let curTotal = getData(dataEl);
+  curTotal += amount;
   if (isNaN(curTotal)) {
     console.error(`Something went wrong parsing ${dataEl.innerText} and adding ${amount}`);
     return;
   }
-  curTotal += amount;
   const goal = getGoal(name);
   if (isNaN(goal)) {
     // Could just be completed
