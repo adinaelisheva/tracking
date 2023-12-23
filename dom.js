@@ -97,6 +97,12 @@ function completeGoal(name) {
   goalEl.classList.add('complete');
 }
 
+function handleAmountKeypress(event) {
+  if (event.code === 'Enter') {
+    document.querySelector('button.amountSubmit').click();
+  }
+}
+
 function updateDataElAndGoal(dataEl, amount, pct, name, isComplete) {
   if (getDateInputDate() !== BASE_DATE) {
     // Don't update for a different day

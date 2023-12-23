@@ -12,6 +12,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
       document.querySelector('.note').classList.remove('hidden');
     }
 
+    document.querySelector('input.amount').addEventListener('keypress', handleAmountKeypress);
+
     await httpSrvc.fetchConfigs();
     $scope.buttons = {
       visible: [],
