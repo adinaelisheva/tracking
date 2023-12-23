@@ -3,6 +3,9 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   const configsWithChildren = {};
 
   async function initialNonRepeatedSetup() {
+    DATE_INPUT = document.querySelector('input.date');
+    DATE_INPUT.addEventListener('change', dateInputChanged);
+
     BASE_DATE = IS_EARLY_HOURS ? await httpSrvc.getYesterday() : getTodayDateInputStr();
     resetDateInputToToday();
     if (IS_EARLY_HOURS) {

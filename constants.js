@@ -35,4 +35,4 @@ const TIME_SUFFIX = 'T00:00:00.000';
 
 const NOW = new Date();
 const IS_EARLY_HOURS = NOW.getHours() <= 4;
-let BASE_DATE;
+let BASE_DATE, DATE_INPUT;

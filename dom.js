@@ -36,6 +36,14 @@ function shortenNumberForDisplay(n) {
   return `${Math.floor(n/1000)}k`;
 }
 
+function dateInputChanged() {
+  if (isDateInputReset()) {
+    document.body.classList.remove('isOtherDate');
+  } else {
+    document.body.classList.add('isOtherDate');
+  }
+}
+
 function getTodayDateInputStr() {
   let day = `${NOW.getDate()}`;
   if (day.length < 2) { day = `0${day}`; }
@@ -45,16 +53,17 @@ function getTodayDateInputStr() {
 }
 
 function resetDateInputToToday() {
-  document.querySelector('input.date').value = BASE_DATE;
+  DATE_INPUT.value = BASE_DATE;
+  dateInputChanged();
 }
 
 function isDateInputReset() {
   const dStr = getTodayDateInputStr();
-  return document.querySelector('input.date').value === dStr;
+  return DATE_INPUT.value === dStr;
 }
 
 function getDateInputDate() {
-  return document.querySelector('input.date').value;
+  return DATE_INPUT.value;
 }
 
 function updateItemPctColor(el, pct, property = 'border-color') {
