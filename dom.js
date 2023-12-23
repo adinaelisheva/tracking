@@ -30,7 +30,7 @@ function getPctColor(pct) {
 }
 
 function shortenNumberForDisplay(n) {
-  if (`${n}`.length < 3) {
+  if (`${n}`.length < 4) {
     return `${n}`;
   }
   return `${Math.floor(n/1000)}k`;

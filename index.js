@@ -116,7 +116,6 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     }
     if (name === 'variable') {
       logVariableTimelyAmount();
-      closeCurrentPanel();
       return;
     }
     const config = configsByName[name];
@@ -170,7 +169,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   async function logVariableTimelyAmount() {
     const panel = document.querySelector(`.panel#variable`);
     const name = panel.getAttribute('name');
-    const amount = parseInt(panel.querySelector('input.amount').value);
+    const amtInput = panel.querySelector('input.amount');
+    const amount = parseInt(amtInput.value);
     if (isNaN(amount) || amount < 0) {
       // Must be a positive integer
       return; 
@@ -178,6 +178,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     httpSrvc.log(name, amount);
     const config = configsByName[name];
     updateDomForTimelyAmount(name, amount, usesSumLogs(config));
+    amtInput.value = '';
+    amtInput.focus();
   }
 
   function logSingleTimelyOccurence(config) {
