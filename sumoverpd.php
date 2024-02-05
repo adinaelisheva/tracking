@@ -2,7 +2,8 @@
 /* Usage: GET sumoverpd.php
 *   name: "Apples" // Name of the tracking category
 *   period: "M" // The period to sum over. Can be "D", "W", or "M"
-*  Returns sum of all values over that period
+* Returns sum of all values over that period. Note that this is last N days, so, eg, 
+* last 7 or last 30 days (NOT trying to go to the beginning of the month or week)
 */
   include("common.php"); 
 
@@ -16,10 +17,10 @@
   // Default to D 
   $lastDate = strtotime($date);
   if ($pd == "W") {
-    $lastDate = strtotime('last sunday', strtotime($date));
+    $lastDate = strtotime('7 days ago', strtotime($date));
   }
   if ($pd == "M") {
-    $lastDate = strtotime('first day of this month');
+    $lastDate = strtotime('30 days ago');
   }
 
   $startStr = date("Y-m-d", $lastDate);
