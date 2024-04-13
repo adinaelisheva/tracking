@@ -17,6 +17,7 @@ const ICONMAP = {
   mask: '👺',
   footprints: '👣',
   boot: '🥾',
+  bike: '🚴‍♀️',
   default: '✅',
   on: '🔴',
   off: '⚪',
