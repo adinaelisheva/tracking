@@ -26,8 +26,10 @@
                 ng-style="{'background-color': config.color}" 
                 id="{{config.name}}"
                 class="{{config.isInactive ? 'inactive' : ''}}">
-          <span class="icon">{{config.displayIcon}}</span><span class="text">{{config.viewName}}</span>
-        </button></td>
+          <span class="icon">{{config.displayIcon}}</span>
+          <span class="text">{{config.viewName}}</span>
+        </button>
+        <div class="typeIcon">{{config.type === 1 ? '#' : (config.type === 2 ? '⤇' : '⟳')}}</div></td>
         <td><div class="data" id="{{config.name}}" ng-style="{'border-color': config.borderColor}" ng-click="openLogPanel(config.name)">
           {{config.remainingStr}}
         </div></td>
@@ -47,10 +49,11 @@
         <button ng-click="handleButtonClick(config.name)" ng-style="{'background-color': config.color}">
           {{config.displayIcon}}<span class="text">{{config.viewName}}</span>
         </button>
+        <div class="typeIcon">{{config.type === 1 ? '#' : (config.type === 2 ? '⤇' : '⟳')}}</div>
         <div class="data" id="{{config.name}}" ng-style="{'border-color': config.borderColor}" ng-click="openLogPanel(config.name)">
           {{config.remaining}}
         </div>
-        <div ng-if="config.goal" id="{{config.name}}" class="goal
+        <div id="{{config.name}}" class="goal
           {{(config.type === 1 && config.remaining < config.goal) || 
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
           {{(config.type === 1 && config.remaining < config.goal) || 

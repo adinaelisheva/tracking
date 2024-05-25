@@ -1,7 +1,4 @@
 angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', function($scope, httpSrvc) {
-  const configsByName = {};
-  const configsWithChildren = {};
-
   async function initialNonRepeatedSetup() {
     DATE_INPUT = document.querySelector('input.date');
     DATE_INPUT.addEventListener('change', dateInputChanged);
@@ -102,13 +99,13 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   async function fetchAndUpdateAllLogTables() {
     for (const config of httpSrvc.data.configs) {
       const table = document.querySelector(`.panel#${config.name}log table`);
-      const logs = await httpSrvc.fetchMonthLogs(config.name);
+      const logs = await httpSrvc.fetchMonthLogs(config.name, hasChildren(config));
       if (usesSumLogs(config)) {
         addDailySumsToTable(table, logs, config.goal);
         const daylogs = await httpSrvc.fetchDayLogs(config.name);
         createDayLogsDiv(config.name, daylogs);
       } else {
-        addAllLogsToTable(table, logs, config.amount_varies, config.type === TOGGLE);
+        addAllLogsToTable(table, logs, config);
       }
     }
   }
@@ -134,7 +131,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     }
     // if we're opening a panel, don't log - it might just get closed
     // logging can happen later
-    if (configsWithChildren[name]) {
+    if (hasChildren(config)) {
       openParentPanel(name);
       return;
     } else if (config.amount_varies) {

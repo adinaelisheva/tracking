@@ -126,6 +126,14 @@ button.inactive .icon {
   border-style: outset;
 }
 
+.typeIcon {
+  display: inline-block;
+  position: relative;
+  left: -41px;
+  width: 0;
+  bottom: 1px;
+}
+
 .complete {
   color: #a0ce1c;
 }

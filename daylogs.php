@@ -1,7 +1,8 @@
 <?php
-/* Usage: GET logs.php
-*   name: "Apples" // Name of the tracking category (optional)
-*  Returns all logs in the past day
+/* Usage: GET daylogs.php
+*   name: "Apples" // Name of the tracking category
+*   date: YYYY-MM-DD // Date in question
+*  Returns all logs in the given day and category
 */
   include("common.php"); 
 

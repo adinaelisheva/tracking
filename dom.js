@@ -246,11 +246,14 @@ function addDailySumsToTable(table, logs, goal) {
   addLogRowToTable(table, curDate, logSums[curDate], logSums[curDate] >= goal);
 }
 
-function addAllLogsToTable(table, logs, showAmount, useIcon) {
+function addAllLogsToTable(table, logs, config) {
   for (const log of logs) {
-    let value = showAmount ? log.value : null;
-    if (useIcon) {
+    let value = config.amount_varies ? log.value : null;
+    if (config.type === TOGGLE) {
       value = log.value ? ICONMAP.on : ICONMAP.off;
+    }
+    if (log.name !== config.name) {
+      value = ICONMAP[configsByName[log.name].icon]
     }
     addLogRowToTable(table, log.date, value);
   }

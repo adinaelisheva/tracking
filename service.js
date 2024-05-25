@@ -13,10 +13,11 @@ angular.module('tracking',[]).service('httpSrvc', ['$http', function ($http) {
     data.configs = configs.data;
   }
 
-  this.fetchMonthLogs = async function(name) {
+  this.fetchMonthLogs = async function(name, hasChildren) {
     let qStr = '/tracking/monthlogs.php';
     const date = getDateInputDate();
     if (name) { qStr = qStr + `?name=${name}&date=${date}`; }
+    if (hasChildren) { qStr = qStr + `&children=1`; }
     const logs = await $http.get(qStr);
     return logs.data;
   }

@@ -18,6 +18,7 @@ const ICONMAP = {
   footprints: '👣',
   boot: '🥾',
   bike: '🚴‍♀️',
+  canoe: '🛶',
   default: '✅',
   on: '🔴',
   off: '⚪',
