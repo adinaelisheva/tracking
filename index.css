@@ -1,13 +1,3 @@
-* {
-  box-sizing: border-box;
-}
-
-body, button, input {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 500;
-  font-size: 18px;
-}
-
 body.isOtherDate {
   background: #dfd5a840;
 }
@@ -28,8 +18,17 @@ body.isOtherDate {
 button,
 .todayButton,
 .data,
-.goal {
+.goal,
+.typeIcon {
   user-select: none;
+}
+
+button, .data {
+  cursor: pointer;
+}
+
+a.goal {
+  text-decoration: none;
 }
 
 .buttons button,

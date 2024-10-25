@@ -3,7 +3,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     DATE_INPUT = document.querySelector('input.date');
     DATE_INPUT.addEventListener('change', dateInputChanged);
 
-    BASE_DATE = IS_EARLY_HOURS ? await httpSrvc.getYesterday() : getTodayDateInputStr();
+    const yesterday = luxon.DateTime.now().plus({ days: -1 });
+    BASE_DATE = IS_EARLY_HOURS ? yesterday.toFormat('yyyy-MM-dd') : getTodayDateInputStr();
     resetDateInputToToday();
     if (IS_EARLY_HOURS) {
       document.querySelector('.note').classList.remove('hidden');
