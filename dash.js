@@ -23,8 +23,12 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
     }
 
     let data = [];
-    if ($scope.config.type === TIMELY && $scope.config.refresh_cycle === 'D') {
-      data = gatherDailyData($scope.logs, $scope.config.goal, defaultBgColor);
+    if ($scope.config.type === TIMELY) {
+      if ($scope.config.refresh_cycle === 'D') {
+        data = gatherDailyData($scope.logs, $scope.config.goal, defaultBgColor);
+      } else if ($scope.config.refresh_cycle === 'W') {
+        data = gatherWeeklyData($scope.logs, $scope.config.goal, defaultBgColor);
+      }
     }
 
     if (data.length) {
@@ -58,7 +62,7 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
             labels: data[0],
             datasets: [
               {
-                label: 'Amount per day',
+                label: 'Amount',
                 data: data[1],
                 backgroundColor: data[2],
               }
@@ -74,26 +78,66 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
   // All data-gathering functions return [labels, data, colors]
   function gatherDailyData(logs, goal, defaultBgColor) {
     const dateToTotal = {};
+    let prevDate;
     for (let item of logs) {
-      const date = luxon.DateTime.fromSQL(item.date).toFormat("L/d");
-      if (dateToTotal[date]) {
-        dateToTotal[date] += item.value;
+      const date = luxon.DateTime.fromSQL(item.date);
+      while (prevDate && prevDate.plus({days: -1}).ts > date.ts) {
+        // fill in missing dates
+        prevDate = prevDate.plus({days: -1});
+        dateToTotal[prevDate.toFormat("L/d")] = 0.01; // to show a tiny bar
+      }
+      const dateStr = date.toFormat("L/d");
+      if (dateToTotal[dateStr]) {
+        dateToTotal[dateStr] += item.value;
       } else {
         // Found a new day, but we're full up, so stop counting
         if (Object.keys(dateToTotal).length === 30) {
           break;
         }
-        dateToTotal[date] = item.value;
+        dateToTotal[dateStr] = item.value;
       }
+      prevDate = date;
     }
     const dates = Object.keys(dateToTotal).reverse();
     const amounts = Object.values(dateToTotal).reverse();
     const colors = [];
     for (let amt of amounts) {
       if (amt >= goal) {
-        colors.push(defaultBgColor);
+        colors.push("#a0ce1c");
       } else {
-        colors.push("#ad0707");
+        colors.push(defaultBgColor);
+      }
+    }
+    return [dates, amounts, colors];
+  }
+
+  function gatherWeeklyData(logs, goal, defaultBgColor) {
+    const dateToTotal = {};
+    let prevWeekDate;
+    for (let item of logs) {
+      const date = luxon.DateTime.fromSQL(item.date);
+      const weekDate = date.plus({days: -1 * (date.weekday - 1)}); // Find first day of this week
+      while (prevWeekDate && prevWeekDate.plus({days: -7}).ts > weekDate.ts) {
+        // fill in missing weeks
+        prevWeekDate = prevWeekDate.plus({days: -7});
+        dateToTotal[prevWeekDate.toFormat("L/d")] = 0.01; // to show a tiny bar
+      }
+      const dateStr = weekDate.toFormat("L/d");
+      if (dateToTotal[dateStr]) {
+        dateToTotal[dateStr] += item.value;
+      } else {
+        dateToTotal[dateStr] = item.value;
+      }
+      prevWeekDate = weekDate;
+    }
+    const dates = Object.keys(dateToTotal).reverse();
+    const amounts = Object.values(dateToTotal).reverse();
+    const colors = [];
+    for (let amt of amounts) {
+      if (amt >= goal) {
+        colors.push("#a0ce1c");
+      } else {
+        colors.push(defaultBgColor);
       }
     }
     return [dates, amounts, colors];
