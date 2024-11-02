@@ -29,59 +29,81 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
       } else if ($scope.config.refresh_cycle === 'W') {
         data = gatherWeeklyData($scope.logs, $scope.config.goal, defaultBgColor);
       }
+    } else if ($scope.config.type === INSTANCE) {
+      data = gatherInstanceData($scope.logs);
+      document.querySelectorAll('.container').forEach((e) => {e.setAttribute('style', 'height: 70px;')});
+    } else if ($scope.config.type === TOGGLE) {
+      data = gatherToggleData($scope.logs);
+      document.querySelectorAll('.container').forEach((e) => {e.setAttribute('style', 'height: 70px;')});
     }
 
-    if (data.length) {
-      new Chart(
-        document.getElementById('chart'),
-        {
-          type: 'bar',
-          options: {
-            animation: false,
-            plugins: {
-              legend: {
-                display: false
-              },
-              colors: {
-                enabled: false
-              },
-              annotation: {
-                annotations: {
-                  line1: {
-                    type: 'line',
-                    yMin: $scope.config.goal,
-                    yMax: $scope.config.goal,
-                    borderColor: '#ffdddd',
-                    borderWidth: 1,
-                  }
-                }
-              }
-            },
-          },
-          data: {
-            labels: data[0],
-            datasets: [
-              {
-                label: 'Amount',
-                data: data[1],
-                backgroundColor: data[2],
-              }
-            ]
-          }
-        }
-      );
+    // Display data comes in triples. If the 0th element is its own data array, it will only have 3 items
+    if (data[0].length > 3) {
+      createChart(data, 0, defaultBgColor);
+    } else {
+      for (let i = 0; i < data.length;  i++) {
+        createChart(data[i], i, defaultBgColor);
+      }
     }
   }
 
   setup();
 
-  // All data-gathering functions return [labels, data, colors]
+  function createChart(data, index, defaultBgColor) {
+    new Chart(
+      document.getElementById('chart' + index),
+      {
+        type: 'bar',
+        options: {
+          maintainAspectRatio: $scope.config.type === TIMELY,
+          responsive: true,
+          scales: {
+            y: {
+               display: $scope.config.type === TIMELY,
+            }
+          },
+          animation: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            colors: {
+              enabled: false
+            },
+            annotation: {
+              annotations: {
+                line1: {
+                  type: 'line',
+                  yMin: $scope.config.goal,
+                  yMax: $scope.config.goal,
+                  borderColor: '#ffdddd',
+                  borderWidth: 1,
+                }
+              }
+            }
+          },
+        },
+        data: {
+          labels: data[0],
+          datasets: [
+            {
+              label: 'Amount',
+              data: data[1],
+              backgroundColor: data[2] || defaultBgColor,
+            }
+          ]
+        }
+      }
+    );
+  }
+
+  // All data-gathering functions return [labels, data, colors (opt.)]
   function gatherDailyData(logs, goal, defaultBgColor) {
     const dateToTotal = {};
-    let prevDate;
+    let prevDate = luxon.DateTime.now();
     for (let item of logs) {
       const date = luxon.DateTime.fromSQL(item.date);
-      while (prevDate && prevDate.plus({days: -1}).ts > date.ts) {
+      while (prevDate.plus({days: -1}).ts > date.ts) {
         // fill in missing dates
         prevDate = prevDate.plus({days: -1});
         dateToTotal[prevDate.toFormat("L/d")] = 0.01; // to show a tiny bar
@@ -141,6 +163,85 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
       }
     }
     return [dates, amounts, colors];
+  }
+
+  function gatherInstanceData(logs) {
+    let dateToInstance = {};
+    const datas = [];
+    let prevDate = luxon.DateTime.now();
+    // 90 days' data in 5 charts = 18 days per chart
+    const chartSize = 18;
+    for (let item of logs) {
+      const date = luxon.DateTime.fromSQL(item.date);
+      while (prevDate.plus({days: -1}).ts > date.ts) {
+        // fill in missing dates
+        prevDate = prevDate.plus({days: -1});
+        dateToInstance[prevDate.toFormat("L/d")] = 0;
+      }
+      if (Object.keys(dateToInstance).length >= chartSize) {
+        datas.push(dateToInstance);
+        dateToInstance = {};
+      }
+      const dateStr = date.toFormat("L/d");
+      if (!dateToInstance[dateStr]) {
+        dateToInstance[dateStr] = 1;
+      }
+      prevDate = date;
+    }
+    while (Object.keys(dateToInstance).length < chartSize) {
+      // fill in missing dates
+      prevDate = prevDate.plus({days: -1});
+      dateToInstance[prevDate.toFormat("L/d")] = 0;
+    }
+    datas.push(dateToInstance);
+
+    const retData = [];
+    for (let map of datas) {
+      const dates = Object.keys(map).reverse();
+      const amounts = Object.values(map).reverse();
+      retData.push([dates, amounts]);
+    }
+    return retData;
+  }
+
+  function gatherToggleData(logs) {
+    let dateToInstance = {};
+    const datas = [];
+    let prevDate = luxon.DateTime.now();
+    // 90 days' data in 5 charts = 18 days per chart
+    const chartSize = 18;
+    let curStatus = logs[0].value;
+    for (let item of logs) {
+      const date = luxon.DateTime.fromSQL(item.date);
+      while (prevDate.plus({days: -1}).ts > date.ts) {
+        // fill in missing dates
+        prevDate = prevDate.plus({days: -1});
+        dateToInstance[prevDate.toFormat("L/d")] = curStatus;
+      }
+      if (Object.keys(dateToInstance).length >= chartSize) {
+        datas.push(dateToInstance);
+        dateToInstance = {};
+      }
+      const dateStr = date.toFormat("L/d");
+      dateToInstance[dateStr] = curStatus;
+      // We're going backwards, so swap
+      curStatus = !item.value;
+      prevDate = date;
+    }
+    while (Object.keys(dateToInstance).length < chartSize) {
+      // fill in missing dates
+      prevDate = prevDate.plus({days: -1});
+      dateToInstance[prevDate.toFormat("L/d")] = curStatus;
+    }
+    datas.push(dateToInstance);
+
+    const retData = [];
+    for (let map of datas) {
+      const dates = Object.keys(map).reverse();
+      const amounts = Object.values(map).reverse();
+      retData.push([dates, amounts]);
+    }
+    return retData;
   }
 
   // from https://stackoverflow.com/a/5624139 and https://gist.github.com/mjackson/5311256

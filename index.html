@@ -35,11 +35,13 @@
         <td><div class="data" id="{{config.name}}" ng-style="{'border-color': config.borderColor}" ng-click="openLogPanel(config.name)">
           {{config.remainingStr}}
         </div></td>
-        <td><a ng-if="config.goal" id="{{config.name}}" href="./dash.html?c={{config.name}}" class="goal
+        <td><a id="{{config.name}}" href="./dash.html?c={{config.name}}" class="goal
           {{(config.type === 1 && config.remaining < config.goal) || 
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
-          {{(config.type === 1 && config.remaining < config.goal) || 
-            (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goalStr + ')' : '☺'}}
+          {{config.goal ? 
+            ((config.type === 1 && config.remaining < config.goal) || 
+              (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goal + ')' : '☺')
+            : '↝'}}
         </a></td>
       </tr>
     </table>
@@ -55,12 +57,14 @@
         <div class="data" id="{{config.name}}" ng-style="{'border-color': config.borderColor}" ng-click="openLogPanel(config.name)">
           {{config.remaining}}
         </div>
-        <div id="{{config.name}}" class="goal
+        <a id="{{config.name}}" href="./dash.html?c={{config.name}}" class="goal
           {{(config.type === 1 && config.remaining < config.goal) || 
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
-          {{(config.type === 1 && config.remaining < config.goal) || 
-            (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goal + ')' : '☺'}}
-        </div>
+          {{config.goal ? 
+              ((config.type === 1 && config.remaining < config.goal) || 
+                (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goal + ')' : '☺')
+              : '↝'}}
+        </a>
       </div>
     </div>
     <div class="buttons panel hidden" id="variable">
