@@ -31,11 +31,11 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
       }
     } else if ($scope.config.type === INSTANCE) {
       data = gatherInstanceData($scope.logs);
-      document.querySelectorAll('.container').forEach((e) => {e.setAttribute('style', 'height: 70px;')});
     } else if ($scope.config.type === TOGGLE) {
       data = gatherToggleData($scope.logs);
-      document.querySelectorAll('.container').forEach((e) => {e.setAttribute('style', 'height: 70px;')});
     }
+    const height = $scope.config.type === TIMELY && $scope.config.amount_varies ? 250 : 70;
+    document.querySelectorAll('.container').forEach((e) => {e.setAttribute('style', `height: ${height}px;`)});
 
     // Display data comes in triples. If the 0th element is its own data array, it will only have 3 items
     if (data[0].length > 3) {
@@ -50,37 +50,30 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
   setup();
 
   function createChart(data, index, defaultBgColor) {
+    const needsYInfo = $scope.config.type === TIMELY && $scope.config.amount_varies;
     new Chart(
       document.getElementById('chart' + index),
       {
         type: 'bar',
         options: {
-          maintainAspectRatio: $scope.config.type === TIMELY,
+          maintainAspectRatio: false,
           responsive: true,
           scales: {
             y: {
-               display: $scope.config.type === TIMELY,
+               display: needsYInfo,
             }
           },
           animation: false,
           plugins: {
+            tooltip: {
+              enabled: needsYInfo,
+            },
             legend: {
               display: false
             },
             colors: {
               enabled: false
             },
-            annotation: {
-              annotations: {
-                line1: {
-                  type: 'line',
-                  yMin: $scope.config.goal,
-                  yMax: $scope.config.goal,
-                  borderColor: '#ffdddd',
-                  borderWidth: 1,
-                }
-              }
-            }
           },
         },
         data: {
