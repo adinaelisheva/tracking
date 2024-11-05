@@ -116,6 +116,12 @@ button.inactive .icon {
   font-size: 32px;
 }
 
+.goal.nogoal {
+  font-size: 32px;
+  font-weight: normal;
+  color: #666;
+}
+
 .todayButton {
   border-radius: 100px;
   border: 2px inset black;

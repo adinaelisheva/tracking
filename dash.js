@@ -37,8 +37,10 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
     const height = $scope.config.type === TIMELY && $scope.config.amount_varies ? 250 : 70;
     document.querySelectorAll('.container').forEach((e) => {e.setAttribute('style', `height: ${height}px;`)});
 
-    // Display data comes in triples. If the 0th element is its own data array, it will only have 3 items
-    if (data[0].length > 3) {
+    // Display data comes as an array of arrays ([[dates], [values], [colors (optionally)]])
+    // If the data is coming down in an array of data arrays (3d array), then we should be able to see an 
+    // array 2 levels down. Otherwise it should be a string (the date)
+    if (typeof data[0][0] === 'string') {
       createChart(data, 0, defaultBgColor);
     } else {
       for (let i = 0; i < data.length;  i++) {
@@ -51,6 +53,10 @@ angular.module('tracking').controller('dashCtrl', ['$scope', 'httpSrvc', functio
 
   function createChart(data, index, defaultBgColor) {
     const needsYInfo = $scope.config.type === TIMELY && $scope.config.amount_varies;
+    if (!(data[0] && data[1])) {
+      // something went wrong
+      return;
+    }
     new Chart(
       document.getElementById('chart' + index),
       {
