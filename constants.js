@@ -24,6 +24,8 @@ const ICONMAP = {
   banana: '🍌',
   veg: '🥒',
   swim: '🏊',
+  music: '🎵',
+  weight: '🏋️',
   default: '✅',
   on: '🔴',
   off: '⚪',
