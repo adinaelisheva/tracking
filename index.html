@@ -40,7 +40,7 @@
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
           {{config.goal ? 
             ((config.type === 1 && config.remaining < config.goal) || 
-              (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goal + ')' : '☺')
+              (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goalStr + ')' : '☺')
             : '↝'}}
         </a></td>
       </tr>
@@ -62,7 +62,7 @@
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
           {{config.goal ? 
               ((config.type === 1 && config.remaining < config.goal) || 
-                (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goal + ')' : '☺')
+                (config.type === 2 && config.remaining >= config.goal) ? '(' + config.goalStr + ')' : '☺')
               : '↝'}}
         </a>
       </div>
