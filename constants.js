@@ -1,35 +1,6 @@
-const ICONMAP = {
-  heart: '💜',
-  hanafuda: '🎴',
-  book: '📖',
-  shower: '🚿',
-  dice: '🎲',
-  climb: '🧗‍♀️',
-  run: '🏃‍♀️',
-  skull: '💀',
-  guitar: '🎸',
-  whistle: '🎺',
-  water: '💧',
-  yoga: '🧘',
-  dance: '💃',
-  blood: '🩸',
-  sleep: '😴',
-  mask: '👺',
-  footprints: '👣',
-  boot: '🥾',
-  bike: '🚴‍♀️',
-  canoe: '🛶',
-  food: '🍲',
-  milk: '🥛',
-  banana: '🍌',
-  veg: '🥒',
-  swim: '🏊',
-  music: '🎵',
-  weight: '🏋️',
-  default: '✅',
-  on: '🔴',
-  off: '⚪',
-}
+const DEFAULT_ICON = '✅';
+const ON_ICON = '🔴';
+const OFF_ICON = '⚪';
 
 const TIMELY = 1;
 const INSTANCE = 2;

@@ -17,7 +17,8 @@
   // Default to D 
   $lastDate = strtotime($date);
   if ($pd == "W") {
-    $lastDate = strtotime('7 days ago', strtotime($date));
+    // 6 days bc it includes today
+    $lastDate = strtotime('6 days ago', strtotime($date));
   }
   if ($pd == "M") {
     $lastDate = strtotime('30 days ago');

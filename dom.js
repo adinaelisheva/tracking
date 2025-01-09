@@ -1,5 +1,5 @@
 // Various functions to do DOM manip
-  let openPanelId = '';
+let openPanelId = '';
 
 // get a color for a given percent (as a value btw 0 and 1)
 // where 0 = red, 0.5 = yellow, and 1 = green
@@ -167,7 +167,7 @@ function updateDomForToggle(config, isActive) {
   [remaining, pct] = getRemainingAndPctForToggleDiff(0, isActive, config.expected_cycle_length, config.expected_instance_length);
   const dataEl = document.querySelector(`.data#${config.name}`);
   updateDataElAndGoal(dataEl, remaining, pct);
-  addLogRowToTableNamed(config.name, isActive ? ICONMAP.on : ICONMAP.off, null, true);
+  addLogRowToTableNamed(config.name, isActive ? ON_ICON : OFF_ICON, null, true);
 }
 
 function openPanelNearButton(name, panel, button) {
@@ -250,10 +250,10 @@ function addAllLogsToTable(table, logs, config) {
   for (const log of logs) {
     let value = config.amount_varies ? log.value : null;
     if (config.type === TOGGLE) {
-      value = log.value ? ICONMAP.on : ICONMAP.off;
+      value = log.value ? ON_ICON : OFF_ICON;
     }
     if (log.name !== config.name) {
-      value = ICONMAP[configsByName[log.name].icon]
+      value = configsByName[log.name].icon;
     }
     addLogRowToTable(table, log.date, value);
   }

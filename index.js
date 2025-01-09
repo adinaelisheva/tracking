@@ -51,7 +51,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   }
 
   async function updateConfigForDisplay(config) {
-    config.displayIcon = ICONMAP[config.icon] ?? ICONMAP.default;
+    config.displayIcon = config.icon ?? ICONMAP.DEFAULT_ICON;
     switch (config.type) {
       case TIMELY:
         await updateConfigTimelyData(config);
