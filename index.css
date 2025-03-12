@@ -225,3 +225,25 @@ table.logs td:last-child {
   margin: 5px;
   padding: 5px;
 }
+
+/* Spinner - code borrowed from https://codepen.io/mandelid/pen/kNBYLJ */
+#loading {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 5px solid #dfdfdf;
+  border-radius: 50%;
+  border-top-color: #929292;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+  position: absolute;
+  left: calc(50% - 15px);
+  top: 76px;
+}
+
+@keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}

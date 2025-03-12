@@ -46,8 +46,14 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     // This should be the ONLY time you scope.apply
     $scope.$apply();
 
-    // Kick this off asyncrhonously
-    fetchAndUpdateAllLogTables();
+    // Kick this off asynchronously
+    fetchAndUpdateAllLogTables().then(() => {
+      document.querySelector("#loading").remove();
+      isLoading = false;
+      if (pendingPanel) {
+        $scope.handleButtonClick(pendingPanel);
+      }
+    });
   }
 
   async function updateConfigForDisplay(config) {
@@ -128,6 +134,11 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     }
     if (openPanelId && config.parent !== openPanelId) {
       // A panel is open but something else was clicked - ignore it.
+      return;
+    }
+    if (isLoading) {
+      // Wait til we're done loading, then open the panel
+      pendingPanel = name;
       return;
     }
     // if we're opening a panel, don't log - it might just get closed
@@ -229,6 +240,9 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
 
   $scope.resetDateInputToToday = resetDateInputToToday;
   $scope.yesterday = DAYS_OF_WEEK_ABBREV[(NOW.getDay() + 6) % 7];
+
+  let pendingPanel = null;
+  let isLoading = true;
 
   initialNonRepeatedSetup();
 }]);
