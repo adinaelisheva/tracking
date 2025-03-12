@@ -48,8 +48,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
 
     // Kick this off asynchronously
     fetchAndUpdateAllLogTables().then(() => {
-      document.querySelector("#loading").remove();
-      isLoading = false;
+      document.querySelector("#loadingMessage").remove();
+      isLoadingLogTables = false;
       if (pendingPanel) {
         $scope.handleButtonClick(pendingPanel);
       }
@@ -136,7 +136,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
       // A panel is open but something else was clicked - ignore it.
       return;
     }
-    if (isLoading) {
+    
+    if (isLoadingLogTables && config.amount_varies) {
       // Wait til we're done loading, then open the panel
       pendingPanel = name;
       return;
@@ -242,7 +243,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   $scope.yesterday = DAYS_OF_WEEK_ABBREV[(NOW.getDay() + 6) % 7];
 
   let pendingPanel = null;
-  let isLoading = true;
+  let isLoadingLogTables = true;
 
   initialNonRepeatedSetup();
 }]);
