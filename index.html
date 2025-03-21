@@ -53,7 +53,10 @@
     <!-- Input panels -->
     <div class="panelCloseOverlay hidden" ng-click="handleButtonClick('close')"></div>
     <div ng-repeat="panelConfig in buttons.hidden" id="{{panelConfig.name}}" class="buttons hidden panel">
-      <div  ng-repeat="config in panelConfig.list" class="row">
+      <div class="row subtitle">
+        Log parent as well: <input type="checkbox" checked="true" class="logParentCb" />
+      </div>
+      <div  ng-repeat="config in panelConfig.childList" class="row">
         <button ng-click="handleButtonClick(config.name)" ng-style="{'background-color': config.color}">
           {{config.displayIcon}}<span class="text">{{config.viewName}}</span>
         </button>

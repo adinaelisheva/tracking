@@ -186,6 +186,19 @@ td.hidden {
   margin-bottom: 10px;
 }
 
+.row.subtitle {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+input.logParentCb {
+  margin: 1px 10px;
+  height: 18px;
+  width: 18px;
+}
+
 table.logs {
   border-collapse: collapse;
   margin-right: auto;

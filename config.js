@@ -1,4 +1,3 @@
-const configsWithChildren = {}
 const configsByName = {};
 
 // Place for functions that depend on config data (but not DOM or angular stuff)
@@ -30,8 +29,4 @@ function getRemainingAndPctForToggleDate(lastActiveStr, config) {
 
 function usesSumLogs(config) {
   return config.type === TIMELY && config.amount_varies && config.refresh_cycle === 'D';
-}
-
-function hasChildren(config) {
-  return configsWithChildren[config.name];
 }

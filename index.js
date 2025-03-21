@@ -18,7 +18,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
       hidden: [],
       all: [],
     }
-    const hiddenButtonsByName = {};
+    const hiddenChildButtonsByName = {};
+    const configsWithChildren = {};
     for (const config of httpSrvc.data.configs) {
       config.viewName = config.name;
       config.goalStr = shortenNumberForDisplay(config.goal);
@@ -27,20 +28,24 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
       await updateConfigForDisplay(config);
       if (config.parent) {
         configsWithChildren[config.parent] = true;
-        if (!hiddenButtonsByName[config.parent]) {
-          hiddenButtonsByName[config.parent] = [];
+        if (!hiddenChildButtonsByName[config.parent]) {
+          hiddenChildButtonsByName[config.parent] = [];
         }
-        hiddenButtonsByName[config.parent].push(config);
+        hiddenChildButtonsByName[config.parent].push(config);
       } else {
         $scope.buttons.visible.push(config);
       }
       $scope.buttons.all.push(config);
     }
+    // Now update all configs with children
+    for (const configName of Object.keys(configsWithChildren)) {
+      configsByName[configName].hasChildren = true;
+    }
     // Now save all the hidden buttons
-    for (const name of Object.keys(hiddenButtonsByName)) {
+    for (const name of Object.keys(hiddenChildButtonsByName)) {
       $scope.buttons.hidden.push({
         name,
-        list: hiddenButtonsByName[name],
+        childList: hiddenChildButtonsByName[name],
       });
     }
     // This should be the ONLY time you scope.apply
@@ -106,7 +111,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   async function fetchAndUpdateAllLogTables() {
     for (const config of httpSrvc.data.configs) {
       const table = document.querySelector(`.panel#${config.name}log table`);
-      const logs = await httpSrvc.fetchMonthLogs(config.name, hasChildren(config));
+      const logs = await httpSrvc.fetchMonthLogs(config.name, config.hasChildren);
       if (usesSumLogs(config)) {
         addDailySumsToTable(table, logs, config.goal);
         const daylogs = await httpSrvc.fetchDayLogs(config.name);
@@ -144,7 +149,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     }
     // if we're opening a panel, don't log - it might just get closed
     // logging can happen later
-    if (hasChildren(config)) {
+    if (config.hasChildren) {
       openParentPanel(name);
       return;
     } else if (config.amount_varies) {
@@ -153,8 +158,12 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     } 
     
     if (config.parent) {
-      // Now that a "real" child button has been pressed, also log the parent
-      logClick(configsByName[config.parent]);
+      const panel = document.querySelector(`.panel#${openPanelId}`);
+      if (panel.querySelector('.logParentCb').checked) {
+        // Now that a "real" child button has been pressed - and the checkbox
+        // indicates that we want this -  also log the parent
+        logClick(configsByName[config.parent]);
+      }
       closeCurrentPanel();
     }
 

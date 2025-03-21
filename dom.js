@@ -198,6 +198,14 @@ function openPanel(id, panel, top = 0) {
 
 function closeCurrentPanel() {
   const panel = document.querySelector(`.panel#${openPanelId}`);
+  const checkbox = panel.querySelector('.logParentCb');
+  if (checkbox) {
+    setTimeout(() => {
+      // Checkbox should always default to checked
+      // Do this in a timeout to avoid visual flicker
+      checkbox.checked = true; 
+    }, 300);
+  }
   panel.classList.add('hidden');
   hideAnyDaylogs();
   openPanelId = '';
