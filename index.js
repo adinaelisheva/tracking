@@ -50,6 +50,11 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     }
     // This should be the ONLY time you scope.apply
     $scope.$apply();
+    isLoadingConfigs = false;
+    document.querySelector('.loadingItem').innerText = 'log tables';
+    if (pendingClick) {
+      $scope.handleButtonClick(pendingClick);
+    }
 
     // Kick this off asynchronously
     fetchAndUpdateAllLogTables().then(() => {
@@ -123,6 +128,11 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   }
 
   $scope.handleButtonClick = function(name) {
+    if (isLoadingConfigs) {
+      // Nothing is ready yet; wait
+      pendingClick = name;
+      return;
+    }
     if (name === 'close') {
       // just closing a panel
       closeCurrentPanel();
@@ -155,7 +165,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     } else if (config.amount_varies) {
       openVariablePanel(config.name);
       return;
-    } 
+    }
     
     if (config.parent) {
       const panel = document.querySelector(`.panel#${openPanelId}`);
@@ -251,6 +261,8 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
   $scope.resetDateInputToToday = resetDateInputToToday;
   $scope.yesterday = DAYS_OF_WEEK_ABBREV[(NOW.getDay() + 6) % 7];
 
+  let pendingClick = null;
+  let isLoadingConfigs = true;
   let pendingPanel = null;
   let isLoadingLogTables = true;
 
