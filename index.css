@@ -270,3 +270,29 @@ table.logs td:last-child {
 @-webkit-keyframes spin {
   to { -webkit-transform: rotate(360deg); }
 }
+
+@media screen and (max-width: 600px) {
+  body, button, input { 
+    font-size: 14px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  .data, .goal, .todayButton {
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+  }
+  .todayButton {
+    font-size: 14px;
+  }
+  input.date {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .buttons button {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+}
