@@ -40,7 +40,7 @@
         <td><div class="data" id="{{config.name}}" ng-style="{'border-color': config.borderColor}" ng-click="openLogPanel(config.name)">
           {{config.remainingStr}}
         </div></td>
-        <td><a id="{{config.name}}" href="./dash.html?c={{config.name}}" class="goal {{config.goal ? '' : 'nogoal '}}
+        <td><a id="{{config.name}}" href="./dash.html?c={{config.name}}" goal="{{config.goal ? config.goal : ''}}" class="goal {{config.goal ? '' : 'nogoal '}}
           {{(config.type === 1 && config.remaining < config.goal) || 
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
           {{config.goal ? 
@@ -65,7 +65,7 @@
         <div class="data" id="{{config.name}}" ng-style="{'border-color': config.borderColor}" ng-click="openLogPanel(config.name)">
           {{config.remaining}}
         </div>
-        <a id="{{config.name}}" href="./dash.html?c={{config.name}}" class="goal {{config.goal ? '' : 'nogoal '}}
+        <a id="{{config.name}}" href="./dash.html?c={{config.name}}" goal="{{config.goal ? config.goal : ''}}" class="goal {{config.goal ? '' : 'nogoal '}}
           {{(config.type === 1 && config.remaining < config.goal) || 
             (config.type === 2 && config.remaining >= config.goal) ? '' : 'complete'}}">
           {{config.goal ? 
