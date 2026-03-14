@@ -25,6 +25,8 @@ List of tracking configs where each has the following options:
   refreshCycle? = string; // D/W/M for daily/weekly/monthly tracking
   amountVaries? = int; // eg, yes for water, no for exercise
   goal? = int;
+  secondaryGoal? = int; // An amount that is "close enough" if not the full goal
+  goalProrates? = bool; // Whether to adjust the goal over the course of the day
 
   // For tracking type 3:
   expectedCycleLenth? = int;

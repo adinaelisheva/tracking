@@ -21,6 +21,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
     const hiddenChildButtonsByName = {};
     const configsWithChildren = {};
     for (const config of httpSrvc.data.configs) {
+      adjustGoal(config);
       config.viewName = config.name;
       config.goalStr = shortenNumberForDisplay(config.goal);
       config.name = config.name.replace(' ', '_').replace('(','').replace(')','');
@@ -64,6 +65,21 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
         $scope.handleButtonClick(pendingPanel);
       }
     });
+  }
+
+  // Adjust config as needed. For now, just changing the goal based
+  // on time of day if needed.
+  function adjustGoal(config) {
+    if (!config.goal_prorates) {
+      return;
+    }
+    const date = luxon.DateTime.now();
+    const now = date.hour + (date.minute / 60);
+    // Assuming I'm up around 9 and counting 14 hours of my day
+    let pct = (now - 9) / 14;
+    if (pct < 0) { pct = 0; }
+    if (pct > 1) { pct = 1; }
+    config.goal = Math.round(config.goal * pct);
   }
 
   async function updateConfigForDisplay(config) {
