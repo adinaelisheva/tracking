@@ -74,7 +74,12 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
       return;
     }
     const date = luxon.DateTime.now();
-    const now = date.hour + (date.minute / 60);
+    let hour = date.hour;
+    if (hour < 6) {
+      // Early morning, I am not up yet
+      hour += 24;
+    }
+    const now = hour + (date.minute / 60);
     // Assuming I'm up around 9 and counting 14 hours of my day
     let pct = (now - 9) / 14;
     if (pct < 0) { pct = 0; }
