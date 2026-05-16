@@ -26,6 +26,7 @@ angular.module('tracking').controller('trackingCtrl', ['$scope', 'httpSrvc', fun
       config.goalStr = shortenNumberForDisplay(config.goal);
       config.name = config.name.replace(' ', '_').replace('(','').replace(')','');
       configsByName[config.name] = config; // Save for easier lookup later
+      // TODO - can this be parallelized? Consider await promise.all
       await updateConfigForDisplay(config);
       if (config.parent) {
         configsWithChildren[config.parent] = true;
