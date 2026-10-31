@@ -242,6 +242,7 @@ table.logs td:last-child {
 
 #loadingMessage {
   position: absolute;
+  top: 40px;
   font-size: 12px;
   font-weight: normal;
   display: flex;
